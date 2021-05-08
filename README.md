@@ -19,6 +19,5 @@ Here is an integration to retrive [PiJuice](https://github.com/PiSupply/PiJuice)
 
 
 ## Credits
-Home Assistant AddOn to easily activate I2C feature in HAOS : https://github.com/adamoutler/HassOSConfigurator
-
+Home Assistant AddOn to easily activate I2C feature in HAOS : https://github.com/adamoutler/HassOSConfigurator<br>
 PyPI library for I2C access : https://github.com/bivab/smbus-cffi
