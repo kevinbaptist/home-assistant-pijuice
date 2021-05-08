@@ -9,7 +9,6 @@ Here is an integration to retrive [PiJuice](https://github.com/PiSupply/PiJuice)
 
 
 ## Incoming features
-* Use threads to avoid latencies during update
 * Handle other sensors :
   * Status (with event text and translations)
   * Fault events
