@@ -10,8 +10,7 @@ Here is an integration to retrieve [PiJuice](https://github.com/PiSupply/PiJuice
 
 ## Incoming features
 * Handle other sensors :
-  * Status (with event text and translations)
-  * Fault events
+  * Status (binary sensors with texts)
   * Battery voltage
   * Battery current
 * Support °C/°F for temperatures
