@@ -1,9 +1,0 @@
-{
-        "domain": "pijuice",
-        "name": "PiJuice UPS HAT",
-        "documentation": "",
-        "requirements": ["smbus-cffi==0.5.1"],
-        "version": "0.1.0",
-        "dependencies": [],
-        "codeowners": ["@Racailloux"]
-}
