@@ -1,4 +1,4 @@
-# Home-assistant PiJuice Integration
+# Home Assistant PiJuice Integration
 
 Here is an integration to retrieve [PiJuice](https://github.com/PiSupply/PiJuice) values in [Home Assistant](https://home-assistant.io) sensors.
 
