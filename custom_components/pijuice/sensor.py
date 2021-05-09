@@ -31,7 +31,9 @@ DEFAULT_I2C_BUS = 1
 
 MIN_TIME_BETWEEN_UPDATES = timedelta(seconds=10)
 
-SENSOR_STATUS = "status"
+SENSOR_BATTERY_STATUS = "battery_status"
+SENSOR_POWER_STATUS = "power_input_status"
+SENSOR_POWER_IO_STATUS = "power_input_io_status"
 SENSOR_CHARGE = "charge"
 SENSOR_TEMP = "temperature"
 SENSOR_BATTERY_VOLTAGE = "battery_voltage"
@@ -41,7 +43,9 @@ SENSOR_IO_CURRENT = "io_current"
 
 SENSOR_LIST = {
     # [name, unit, index]
-    SENSOR_STATUS: ['Status', '', 0x40, 1],
+    SENSOR_BATTERY_STATUS: ['Battery status', '', 0x40, 1],
+    SENSOR_POWER_STATUS: ['Power input status', '', 0x40, 1],
+    SENSOR_POWER_IO_STATUS: ['Power input IO status', '', 0x40, 1],
     SENSOR_CHARGE: ['Charge', PERCENTAGE, 0x41, 1],
     SENSOR_TEMP: ['Temperature', TEMP_CELSIUS, 0x47, 2],
     SENSOR_BATTERY_VOLTAGE: ['Battery voltage', VOLT, 0x49, 2],
@@ -50,9 +54,35 @@ SENSOR_LIST = {
     SENSOR_IO_CURRENT: ['IO current', ELECTRICAL_CURRENT_AMPERE, 0x4f, 2],
 }
 
+BAT_STATUS_NORMAL = 'normal'
+BAT_STATUS_CHARGING_FROM_IN = 'charging_from_in'
+BAT_STATUS_CHARGING_FROM_5V_IO = 'charging_from_5v_io'
+BAT_STATUS_NOT_PRESENT = 'not_present'
+
+BATTERY_STATUS_LIST = [
+    BAT_STATUS_NORMAL,
+    BAT_STATUS_CHARGING_FROM_IN,
+    BAT_STATUS_CHARGING_FROM_5V_IO,
+    BAT_STATUS_NOT_PRESENT,
+]
+
+POWER_INPUT_NOT_PRESENT = 'not_present'
+POWER_INPUT_BAD = 'bad'
+POWER_INPUT_WEAK = 'weak'
+POWER_INPUT_PRESENT = 'present'
+
+POWER_INPUT_LIST = [
+    POWER_INPUT_NOT_PRESENT,
+    POWER_INPUT_BAD,
+    POWER_INPUT_WEAK,
+    POWER_INPUT_PRESENT,
+]
+
 POSSIBLE_MONITORED = [
+    SENSOR_BATTERY_STATUS,
+    SENSOR_POWER_STATUS,
+    SENSOR_POWER_IO_STATUS,
     SENSOR_CHARGE,
-    SENSOR_STATUS,
     SENSOR_TEMP,
     SENSOR_BATTERY_VOLTAGE,
     SENSOR_BATTERY_CURRENT,
@@ -68,6 +98,8 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
         vol.All(cv.ensure_list, [vol.In(POSSIBLE_MONITORED)])
 })
 
+DOMAIN = "pijuice"
+
 
 async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
     """Set up the PiJuice sensor."""
@@ -81,6 +113,16 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     
     async_add_entities(sensors, True)
     _LOGGER.info("PiJuice: Everything is setup.")
+
+
+async def async_setup_entry(hass, entry):
+    """Set up a config entry."""
+    return await hass.data[DOMAIN].async_setup_entry(entry)
+
+
+async def async_unload_entry(hass, entry):
+    """Unload a config entry."""
+    return await hass.data[DOMAIN].async_unload_entry(entry)
 
 
 class PiJuiceSensor(Entity):
@@ -113,6 +155,14 @@ class PiJuiceSensor(Entity):
         """Return the unit of measurement of the sensor."""
         return self._unit_of_measurement
 
+    @property
+    def device_class(self):
+        """Return the device class of the entity."""
+        if self._sensor == SENSOR_BATTERY_STATUS:
+            return "pijuice__battery"
+        else:
+            return "pijuice__input"
+
 #    @Throttle(MIN_TIME_BETWEEN_UPDATES)
     async def async_update(self):
         """Set up the sensor."""
@@ -123,9 +173,12 @@ class PiJuiceSensor(Entity):
         data = bus.read_i2c_block_data(i2c_address, self._index, self._size)
         
         # Scale values
-        if self._sensor == SENSOR_STATUS:
-            #To be separated in binary sensors
-            self._state = data[0]
+        if self._sensor == SENSOR_BATTERY_STATUS:
+            self._state = BATTERY_STATUS_LIST[(data[0] >> 2) & 0x03]
+        elif self._sensor == SENSOR_POWER_STATUS:
+            self._state = POWER_INPUT_LIST[(data[0] >> 4) & 0x03]
+        elif self._sensor == SENSOR_POWER_IO_STATUS:
+            self._state = POWER_INPUT_LIST[(data[0] >> 6) & 0x03]
         elif self._sensor == SENSOR_CHARGE:
             self._state = data[0]
         elif self._sensor == SENSOR_TEMP:

@@ -1,0 +1,16 @@
+{
+  "state": {
+    "pijuice__battery": {
+      "normal": "Normal",
+      "charging_from_in": "Charge directe",
+      "charging_from_5v_io": "Charge depuis les I/O",
+      "not_present": "Non présente"
+    },
+    "pijuice__input": {
+      "not_present": "Non présent",
+      "bad": "Mauvaise",
+      "weak": "Faible",
+      "present": "Présent"
+    }
+  }
+}
