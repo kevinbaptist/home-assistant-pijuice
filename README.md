@@ -4,17 +4,20 @@ Here is an integration to retrieve [PiJuice](https://github.com/PiSupply/PiJuice
 
 
 ## Sensors supported
-* Temperature in °C
+* Temperature in °C or °F
 * Charge in %
+* Battery voltage
+* Battery current
+* I/O voltage
+* I/O current
 
 
 ## Incoming features
-* Handle other sensors :
-  * Status (binary sensors with texts)
-  * Battery voltage
-  * Battery current
-* Support °C/°F for temperatures
+* Handle status as binary sensors
 * Add icons natively to sensors
+
+## Known issues
+* ...
 
 
 ## Credits
