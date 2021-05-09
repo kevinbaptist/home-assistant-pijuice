@@ -41,5 +41,6 @@ sensor:
 
 
 ## Credits
-[PI4 enable I2C configurator](https://github.com/adamoutler/HassOSConfigurator) : Home Assistant AddOn to easily activate I2C feature in HAOS<br>
+[Home Assistant](https://github.com/home-assistant) : Home Assistant open-source powerful domotic plateform.<br>
+[PI4 enable I2C configurator](https://github.com/adamoutler/HassOSConfigurator) : Home Assistant AddOn to easily activate I2C feature in HAOS.<br>
 [smbus2 library](https://pypi.org/project/smbus2) : PyPI library for I2C access
