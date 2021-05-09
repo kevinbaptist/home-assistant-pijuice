@@ -35,7 +35,6 @@ sensor:
 ```
 
 ## Incoming features
-* Handle status as texted sensors
 * Add icons natively to sensors
 
 ## Known issues
