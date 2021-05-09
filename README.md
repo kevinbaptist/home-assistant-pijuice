@@ -23,7 +23,9 @@ Here is an integration to retrieve [PiJuice](https://github.com/PiSupply/PiJuice
 sensor:
   - platform: pijuice
     monitored_conditions:
-      - status
+      - battery_status
+      - power_input_status
+      - power_input_io_status
       - charge
       - temperature
       - battery_voltage
