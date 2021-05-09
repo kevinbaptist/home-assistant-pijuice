@@ -2,7 +2,6 @@
 
 Here is an integration to retrieve [PiJuice](https://github.com/PiSupply/PiJuice) values in [Home Assistant](https://home-assistant.io) sensors.
 
-
 ## Sensors supported
 * Temperature in °C or °F
 * Charge in %
@@ -11,9 +10,30 @@ Here is an integration to retrieve [PiJuice](https://github.com/PiSupply/PiJuice
 * I/O voltage
 * I/O current
 
+## Manual installation
+
+1. Using the tool of your choice (SSH, Samba, ...), open the directory of ther HA configuration (where you find `configuration.yaml`).
+2. If you do not have a `custom_components` directory, create it.
+3. Inside the `custom_components` directory, create a new folder called `pijuice`.
+4. Download _all_ the files from the `custom_components/pijuice/` repository to this directory `custom_components\pijuice`.
+
+## Example configuration.yaml
+
+```
+sensor:
+  - platform: pijuice
+    monitored_conditions:
+      - status
+      - charge
+      - temperature
+      - battery_voltage
+      - battery_current
+      - io_voltage
+      - io_current
+```
 
 ## Incoming features
-* Handle status as binary sensors
+* Handle status as texted sensors
 * Add icons natively to sensors
 
 ## Known issues
