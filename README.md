@@ -6,8 +6,8 @@ Here is an integration to retrieve [PiJuice](https://github.com/PiSupply/PiJuice
 * Battery status
 * Power input status
 * Power input I/O status
-* Temperature in °C or °F
 * Charge in %
+* Temperature in °C or °F
 * Battery voltage
 * Battery current
 * I/O voltage
