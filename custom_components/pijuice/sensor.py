@@ -43,15 +43,15 @@ SENSOR_IO_CURRENT = "io_current"
 
 SENSOR_LIST = {
     # [name, unit, index]
-    SENSOR_BATTERY_STATUS: ['Battery status', '', 0x40, 1],
-    SENSOR_POWER_STATUS: ['Power input status', '', 0x40, 1],
-    SENSOR_POWER_IO_STATUS: ['Power input IO status', '', 0x40, 1],
-    SENSOR_CHARGE: ['Charge', PERCENTAGE, 0x41, 1],
-    SENSOR_TEMP: ['Temperature', TEMP_CELSIUS, 0x47, 2],
-    SENSOR_BATTERY_VOLTAGE: ['Battery voltage', VOLT, 0x49, 2],
-    SENSOR_BATTERY_CURRENT: ['Battery current', ELECTRICAL_CURRENT_AMPERE, 0x4b, 2],
-    SENSOR_IO_VOLTAGE: ['IO voltage', VOLT, 0x4d, 2],
-    SENSOR_IO_CURRENT: ['IO current', ELECTRICAL_CURRENT_AMPERE, 0x4f, 2],
+    SENSOR_BATTERY_STATUS: ['Battery status', '', "mdi:flash", 0x40, 1],
+    SENSOR_POWER_STATUS: ['Power input status', '', "mdi:power-plug", 0x40, 1],
+    SENSOR_POWER_IO_STATUS: ['Power input IO status', '', "mdi:power-plug", 0x40, 1],
+    SENSOR_CHARGE: ['Charge', PERCENTAGE, "mdi:battery", 0x41, 1],
+    SENSOR_TEMP: ['Temperature', TEMP_CELSIUS, "mdi:thermometer", 0x47, 2],
+    SENSOR_BATTERY_VOLTAGE: ['Battery voltage', VOLT, "mdi:flash", 0x49, 2],
+    SENSOR_BATTERY_CURRENT: ['Battery current', ELECTRICAL_CURRENT_AMPERE, "mdi:current-dc", 0x4b, 2],
+    SENSOR_IO_VOLTAGE: ['IO voltage', VOLT, "mdi:flash", 0x4d, 2],
+    SENSOR_IO_CURRENT: ['IO current', ELECTRICAL_CURRENT_AMPERE, "mdi:current-dc", 0x4f, 2],
 }
 
 BAT_STATUS_NORMAL = 'normal'
@@ -134,8 +134,9 @@ class PiJuiceSensor(Entity):
         self._client_name = name
         self._name = SENSOR_LIST[sensor][0]
         self._unit_of_measurement = SENSOR_LIST[sensor][1]
-        self._index = SENSOR_LIST[sensor][2]
-        self._size = SENSOR_LIST[sensor][3]
+        self._icon = SENSOR_LIST[sensor][2]
+        self._index = SENSOR_LIST[sensor][3]
+        self._size = SENSOR_LIST[sensor][4]
         self._sensor = sensor
         self._state = None
         self._config = config
@@ -154,6 +155,36 @@ class PiJuiceSensor(Entity):
     def unit_of_measurement(self):
         """Return the unit of measurement of the sensor."""
         return self._unit_of_measurement
+
+    @property
+    def icon(self):
+        """Return the icon of the sensor."""
+        if self._sensor == SENSOR_BATTERY_STATUS:
+            if self._state == BAT_STATUS_NORMAL:
+                return "mdi:battery"
+            elif self._state == BAT_STATUS_CHARGING_FROM_IN or self._state == BAT_STATUS_CHARGING_FROM_5V_IO:
+                return "mdi:battery-charging"
+            elif self._state == BAT_STATUS_NOT_PRESENT:
+                return "mdi:battery-off"
+        elif self._sensor == SENSOR_POWER_STATUS or self._sensor == SENSOR_POWER_IO_STATUS:
+            if self._state == POWER_INPUT_NOT_PRESENT:
+                return "mdi:power-plug-off-outline"
+            elif self._state == POWER_INPUT_BAD or self._state == POWER_INPUT_WEAK:
+                return "mdi:power-plug-outline"
+            elif self._state == POWER_INPUT_PRESENT:
+                return "mdi:power-plug"
+        elif self._sensor == SENSOR_CHARGE:
+            if self._state > 90:
+                return "mdi:battery"
+            elif self._state > 70:
+                return "mdi:battery-80"
+            elif self._state > 50:
+                return "mdi:battery-60"
+            elif self._state > 30:
+                return "mdi:battery-40"
+            else:
+                return "mdi:battery-20"
+        return self._icon
 
     @property
     def device_class(self):
