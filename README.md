@@ -3,8 +3,11 @@
 Here is an integration to retrieve [PiJuice](https://github.com/PiSupply/PiJuice) values in [Home Assistant](https://home-assistant.io) sensors.
 
 ## Sensors supported
-* Temperature in °C or °F
+* Battery status
+* Power input status
+* Power input I/O status
 * Charge in %
+* Temperature in °C or °F
 * Battery voltage
 * Battery current
 * I/O voltage
@@ -33,9 +36,6 @@ sensor:
       - io_voltage
       - io_current
 ```
-
-## Incoming features
-* Add icons natively to sensors
 
 ## Known issues
 * ...
