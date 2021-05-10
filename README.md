@@ -1,5 +1,8 @@
 # Home Assistant PiJuice Integration
 
+[![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/custom-components/hacs) [![version](https://img.shields.io/github/v/release/Racailloux/home-assistant-pijuice)](https://github.com/Racailloux/home-assistant-pijuice/releases)
+
+
 Here is an integration to retrieve [PiJuice](https://github.com/PiSupply/PiJuice) values in [Home Assistant](https://home-assistant.io) sensors.
 
 ## Sensors supported
