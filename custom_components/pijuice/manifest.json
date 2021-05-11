@@ -2,6 +2,7 @@
     "domain": "pijuice",
     "name": "PiJuice UPS HAT",
     "documentation": "https://github.com/Racailloux/home-assistant-pijuice/",
+    "issue_tracker": "https://github.com/Racailloux/home-assistant-pijuice/issues",
     "requirements": ["smbus2==0.4.1"],
     "version": "1.0.0",
     "dependencies": [],
