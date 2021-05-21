@@ -4,9 +4,9 @@ import voluptuous as vol
 from datetime import timedelta
 
 from homeassistant.helpers.entity import Entity
+from homeassistant.components.sensor import PLATFORM_SCHEMA
 import homeassistant.helpers.config_validation as cv
 from homeassistant.util import Throttle
-from homeassistant.components.sensor import PLATFORM_SCHEMA
 from homeassistant.util.temperature import celsius_to_fahrenheit
 from homeassistant.const import (
     CONF_NAME,
@@ -21,6 +21,8 @@ from smbus2 import SMBus
 
 
 _LOGGER = logging.getLogger(__name__)
+
+DOMAIN = "pijuice"
 
 CONF_I2C_ADDRESS = 'i2c_address'
 CONF_I2C_BUS = 'i2c_bus'
@@ -98,8 +100,6 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
         vol.All(cv.ensure_list, [vol.In(POSSIBLE_MONITORED)])
 })
 
-DOMAIN = "pijuice"
-
 
 async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
     """Set up the PiJuice sensor."""
@@ -109,20 +109,9 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     sensors = []
     for sensor in config.get(CONF_MONITORED_CONDITIONS):
         sensors.append(PiJuiceSensor(hass, config, name, sensor))
-#        add_entities([PiJuiceSensor(hass, config, name, sensor)], True)
     
     async_add_entities(sensors, True)
     _LOGGER.info("PiJuice: Everything is setup.")
-
-
-async def async_setup_entry(hass, entry):
-    """Set up a config entry."""
-    return await hass.data[DOMAIN].async_setup_entry(entry)
-
-
-async def async_unload_entry(hass, entry):
-    """Unload a config entry."""
-    return await hass.data[DOMAIN].async_unload_entry(entry)
 
 
 class PiJuiceSensor(Entity):
@@ -194,7 +183,6 @@ class PiJuiceSensor(Entity):
         else:
             return "pijuice__input"
 
-#    @Throttle(MIN_TIME_BETWEEN_UPDATES)
     async def async_update(self):
         """Set up the sensor."""
         # Reading data from I2C bus
