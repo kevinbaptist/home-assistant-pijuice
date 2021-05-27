@@ -16,6 +16,10 @@ Here is an integration to retrieve [PiJuice](https://github.com/PiSupply/PiJuice
 * I/O voltage
 * I/O current
 
+## Prerequisite
+To make the Pi Juice working, this is required that I2C is activated in the system. Follow the [official guide](https://www.home-assistant.io/common-tasks/os/#enable-i2c) or use an addon to do this : 
+[PI4 enable I2C configurator](https://github.com/adamoutler/HassOSConfigurator).
+
 ## Manual installation
 
 1. Using the tool of your choice (SSH, Samba, ...), open the directory of ther HA configuration (where you find `configuration.yaml`).
@@ -24,7 +28,6 @@ Here is an integration to retrieve [PiJuice](https://github.com/PiSupply/PiJuice
 4. Download _all_ the files from the `custom_components/pijuice/` repository to this directory `custom_components\pijuice`.
 
 ## Example configuration.yaml
-
 ```
 sensor:
   - platform: pijuice
@@ -39,10 +42,6 @@ sensor:
       - io_voltage
       - io_current
 ```
-
-## Known issues
-* ...
-
 
 ## Credits
 [Home Assistant](https://github.com/home-assistant) : Home Assistant open-source powerful domotic plateform.<br>
