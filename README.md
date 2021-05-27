@@ -42,6 +42,7 @@ sensor:
       - io_voltage
       - io_current
 ```
+If no "monitored_conditions" is setup, all sensors will be added to Home Assistant as Entities.
 
 ## Credits
 [Home Assistant](https://github.com/home-assistant) : Home Assistant open-source powerful domotic plateform.<br>
