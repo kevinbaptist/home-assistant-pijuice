@@ -21,10 +21,11 @@ To make the Pi Juice Hat accessible and the integration working, this is require
 - If you use Home Assistant Operating System, follow the official documentation : https://www.home-assistant.io/common-tasks/os/#enable-i2c<br>
 - If you use Docker or Core version of Home Assistant, activate I2C depending on your host OS.
 
-## HACS installation
-*Coming soon*
+## HACS installation (Easy mode)
+Use [HACS](https://hacs.xyz/docs/). This will also inform you when there are new releases and you can update easily. If installed this way, you can proceed to configuration either using the Integrations Page or Configuration.yaml (legacy).<br>
+If you are not familiar with HACS, please check the [usage](https://hacs.xyz/docs/basic/getting_started).
 
-## Manual installation
+## Manual installation 
 1. Using the tool of your choice (SSH, Samba, ...), open the directory of ther HA configuration (where you find `configuration.yaml`).
 2. If you do not have a `custom_components` directory, create it.
 3. Inside the `custom_components` directory, create a new folder called `pijuice`.
@@ -49,5 +50,5 @@ If no "monitored_conditions" is setup, all sensors will be added to Home Assista
 
 ## Credits
 [Home Assistant](https://github.com/home-assistant) : Home Assistant open-source powerful domotic plateform.<br>
-[HACS](https://hacs.xyz/) : Home Assistant Community Store gives you a powerful UI to handle downloads of all your custom needs.
+[HACS](https://hacs.xyz/) : Home Assistant Community Store gives you a powerful UI to handle downloads of all your custom needs.<br>
 [smbus2 library](https://pypi.org/project/smbus2) : PyPI library for I2C access
