@@ -1,6 +1,6 @@
 {
   "name": "PiJuice UPS Hat",
-  "render_readme": "true",
+  "render_readme": true,
   "iot_class": ["Local Polling"],
   "domains": ["sensor"],
   "country": ["EN", "FR"]
