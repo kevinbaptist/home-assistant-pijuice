@@ -17,11 +17,14 @@ Here is an integration to retrieve [PiJuice](https://github.com/PiSupply/PiJuice
 * I/O current
 
 ## Prerequisite
-To make the Pi Juice working, this is required that I2C is activated in the system. Follow the [official guide](https://www.home-assistant.io/common-tasks/os/#enable-i2c) or use an addon to do this : 
-[PI4 enable I2C configurator](https://github.com/adamoutler/HassOSConfigurator).
+To make the Pi Juice Hat accessible and the integration working, this is required that I2C is enabled in th host system.<br>
+- If you use Home Assistant Operating System, follow the official documentation : https://www.home-assistant.io/common-tasks/os/#enable-i2c<br>
+- If you use Docker or Core version of Home Assistant, activate I2C depending on your host OS.
+
+## HACS installation
+*Coming soon*
 
 ## Manual installation
-
 1. Using the tool of your choice (SSH, Samba, ...), open the directory of ther HA configuration (where you find `configuration.yaml`).
 2. If you do not have a `custom_components` directory, create it.
 3. Inside the `custom_components` directory, create a new folder called `pijuice`.
@@ -46,4 +49,5 @@ If no "monitored_conditions" is setup, all sensors will be added to Home Assista
 
 ## Credits
 [Home Assistant](https://github.com/home-assistant) : Home Assistant open-source powerful domotic plateform.<br>
+[HACS](https://hacs.xyz/) : Home Assistant Community Store gives you a powerful UI to handle downloads of all your custom needs.
 [smbus2 library](https://pypi.org/project/smbus2) : PyPI library for I2C access
