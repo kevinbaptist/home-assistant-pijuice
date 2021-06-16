@@ -193,32 +193,40 @@ class PiJuiceSensor(Entity):
         # Reading data from I2C bus
         i2c_address = int(self._config.get(CONF_I2C_ADDRESS))
         i2c_bus = int(self._config.get(CONF_I2C_BUS))
-        bus = SMBus(i2c_bus)
-        data = bus.read_i2c_block_data(i2c_address, self._index, self._size)
         
-        # Scale values
-        if self._sensor == SENSOR_BATTERY_STATUS:
-            self._state = BATTERY_STATUS_LIST[(data[0] >> 2) & 0x03]
-        elif self._sensor == SENSOR_POWER_STATUS:
-            self._state = POWER_INPUT_LIST[(data[0] >> 4) & 0x03]
-        elif self._sensor == SENSOR_POWER_IO_STATUS:
-            self._state = POWER_INPUT_LIST[(data[0] >> 6) & 0x03]
-        elif self._sensor == SENSOR_CHARGE:
-            self._state = data[0]
-        elif self._sensor == SENSOR_TEMP:
-            value = data[0]                     #get unsigned value
-            if (data[0] & (1 << 7)):            #unsigned to signed
-                value = value - (1 << 8)
-            if self._unit_of_measurement == TEMP_FAHRENHEIT:
-                value = round(celsius_to_fahrenheit(value), 2)
-            self._state = value
-        elif self._sensor == SENSOR_BATTERY_VOLTAGE or self._sensor == SENSOR_IO_VOLTAGE:
-            self._state = ((data[1] << 8) | data[0]) / 1000.0
-        elif self._sensor == SENSOR_BATTERY_CURRENT or self._sensor == SENSOR_BATTERY_CURRENT:
-            value = (data[1] << 8) | data[0]    #assembly unsigned value
-            if (value & (1 << 15)):             #unsigned to signed
-                value = value - (1 << 16)
-            self._state = value /1000.0
-        else: #should never occurs
-            self._state = 0
-        _LOGGER.debug(f"PiJuice: Updated sensor '{self._name}' - new value '{self._state}'")
+        try:
+            bus = SMBus(i2c_bus)
+            data = bus.read_i2c_block_data(i2c_address, self._index, self._size)
+            
+            # Scale red values
+            if self._sensor == SENSOR_BATTERY_STATUS:
+                self._state = BATTERY_STATUS_LIST[(data[0] >> 2) & 0x03]
+            elif self._sensor == SENSOR_POWER_STATUS:
+                self._state = POWER_INPUT_LIST[(data[0] >> 4) & 0x03]
+            elif self._sensor == SENSOR_POWER_IO_STATUS:
+                self._state = POWER_INPUT_LIST[(data[0] >> 6) & 0x03]
+            elif self._sensor == SENSOR_CHARGE:
+                self._state = data[0]
+            elif self._sensor == SENSOR_TEMP:
+                value = data[0]                     #get unsigned value
+                if (data[0] & (1 << 7)):            #unsigned to signed
+                    value = value - (1 << 8)
+                if self._unit_of_measurement == TEMP_FAHRENHEIT:
+                    value = round(celsius_to_fahrenheit(value), 2)
+                self._state = value
+            elif self._sensor == SENSOR_BATTERY_VOLTAGE or self._sensor == SENSOR_IO_VOLTAGE:
+                self._state = ((data[1] << 8) | data[0]) / 1000.0
+            elif self._sensor == SENSOR_BATTERY_CURRENT or self._sensor == SENSOR_BATTERY_CURRENT:
+                value = (data[1] << 8) | data[0]    #assembly unsigned value
+                if (value & (1 << 15)):             #unsigned to signed
+                    value = value - (1 << 16)
+                self._state = value /1000.0
+            else: #should never occurs
+                self._state = data[0]
+            
+            _LOGGER.debug(f"PiJuice: Updated sensor '{self._name}' - new value '{self._state}'")
+        except Exception as error:
+            _LOGGER.warn(f"PiJuice: Error while retrieving data for sensor '{self._name}' (Error code: '{error}')")
+            pass
+
+
