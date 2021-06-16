@@ -49,6 +49,7 @@ sensor:
 If no "monitored_conditions" is setup, all sensors will be added to Home Assistant as Entities.
 
 ## Credits
+[PiJuice](https://pi-supply.com/) : PiJuice Pi supply hardware/software platform to support Raspberry Pi, Arduino, ...<br>
 [Home Assistant](https://github.com/home-assistant) : Home Assistant open-source powerful domotic plateform.<br>
 [HACS](https://hacs.xyz/) : Home Assistant Community Store gives you a powerful UI to handle downloads of all your custom needs.<br>
 [smbus2 library](https://pypi.org/project/smbus2) : PyPI library for I2C access
