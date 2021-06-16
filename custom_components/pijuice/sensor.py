@@ -1,5 +1,6 @@
 """ The PiJuice component."""
 import logging
+import os
 import voluptuous as vol
 from datetime import timedelta
 
@@ -106,12 +107,16 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     name = config.get(CONF_NAME)
     SENSOR_LIST[SENSOR_TEMP][1] = hass.config.units.temperature_unit
     
-    sensors = []
-    for sensor in config.get(CONF_MONITORED_CONDITIONS):
-        sensors.append(PiJuiceSensor(hass, config, name, sensor))
-    
-    async_add_entities(sensors, True)
-    _LOGGER.info("PiJuice: Everything is setup.")
+    if os.path.exists('/dev/i2c-0') or os.path.exists('/dev/i2c-1') :
+        _LOGGER.info("PiJuice: I2C is present. Start serving sensors...")
+        sensors = []
+        for sensor in config.get(CONF_MONITORED_CONDITIONS):
+            sensors.append(PiJuiceSensor(hass, config, name, sensor))
+        
+        async_add_entities(sensors, True)
+        _LOGGER.info("PiJuice: Everything is setup.")
+    else:
+        _LOGGER.error("I2C does not exist! No sensor will be served. Please activate I2C bus in your OS.")
 
 
 class PiJuiceSensor(Entity):
@@ -216,5 +221,4 @@ class PiJuiceSensor(Entity):
             self._state = value /1000.0
         else: #should never occurs
             self._state = 0
-        
-        _LOGGER.info(f"PiJuice: Updated sensor '{self._name}' - new value '{self._state}'")
+        _LOGGER.debug(f"PiJuice: Updated sensor '{self._name}' - new value '{self._state}'")
