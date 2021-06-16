@@ -22,7 +22,7 @@ To make the Pi Juice Hat accessible and the integration working, this is require
 - If you use Docker or Core version of Home Assistant, activate I2C depending on your host OS.
 
 ## HACS installation (Easy mode)
-Use [HACS](https://hacs.xyz/docs/). This will also inform you when there are new releases and you can update easily. If installed this way, you can proceed to configuration either using the Integrations Page or Configuration.yaml (legacy).<br>
+Use [HACS](https://hacs.xyz/). This will also inform you when there are new releases and you can update easily. If installed this way, you can proceed to configuration either using the Integrations Page or Configuration.yaml (legacy).<br>
 If you are not familiar with HACS, please check the [usage](https://hacs.xyz/docs/basic/getting_started).
 
 ## Manual installation 
