@@ -32,6 +32,8 @@ If you are not familiar with HACS, please check the [usage](https://hacs.xyz/doc
 4. Download _all_ the files from the `custom_components/pijuice/` repository to this directory `custom_components\pijuice`.
 
 ## Example configuration.yaml
+Whatever the installation of this integration used, you need to activate the integration to your configuration file (using share folder or addon to access to it).
+Here is a complete configuration with all entities activated :
 ```
 sensor:
   - platform: pijuice
