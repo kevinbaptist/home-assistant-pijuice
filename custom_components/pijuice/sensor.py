@@ -216,7 +216,7 @@ class PiJuiceSensor(Entity):
                 self._state = value
             elif self._sensor == SENSOR_BATTERY_VOLTAGE or self._sensor == SENSOR_IO_VOLTAGE:
                 self._state = ((data[1] << 8) | data[0]) / 1000.0
-            elif self._sensor == SENSOR_BATTERY_CURRENT or self._sensor == SENSOR_BATTERY_CURRENT:
+            elif self._sensor == SENSOR_BATTERY_CURRENT or self._sensor == SENSOR_IO_CURRENT:
                 value = (data[1] << 8) | data[0]    #assembly unsigned value
                 if (value & (1 << 15)):             #unsigned to signed
                     value = value - (1 << 16)
@@ -225,6 +225,7 @@ class PiJuiceSensor(Entity):
                 self._state = data[0]
             
             _LOGGER.debug(f"PiJuice: Updated sensor '{self._name}' - new value '{self._state}'")
+        # Error while reading on I2C bus
         except Exception as error:
             _LOGGER.warn(f"PiJuice: Error while retrieving data for sensor '{self._name}' (Error code: '{error}')")
             pass
