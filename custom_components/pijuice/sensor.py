@@ -15,8 +15,8 @@ from homeassistant.const import (
     TEMP_CELSIUS,
     TEMP_FAHRENHEIT,
     PERCENTAGE,
-    VOLT,
-    ELECTRICAL_CURRENT_AMPERE)
+    ELECTRIC_POTENTIAL_VOLT,
+    ELECTRIC_CURRENT_AMPERE)
 
 from smbus2 import SMBus
 
@@ -51,10 +51,10 @@ SENSOR_LIST = {
     SENSOR_POWER_IO_STATUS: ['Power input IO status', '', "mdi:power-plug", 0x40, 1],
     SENSOR_CHARGE: ['Charge', PERCENTAGE, "mdi:battery", 0x41, 1],
     SENSOR_TEMP: ['Temperature', TEMP_CELSIUS, "mdi:thermometer", 0x47, 2],
-    SENSOR_BATTERY_VOLTAGE: ['Battery voltage', VOLT, "mdi:flash", 0x49, 2],
-    SENSOR_BATTERY_CURRENT: ['Battery current', ELECTRICAL_CURRENT_AMPERE, "mdi:current-dc", 0x4b, 2],
-    SENSOR_IO_VOLTAGE: ['IO voltage', VOLT, "mdi:flash", 0x4d, 2],
-    SENSOR_IO_CURRENT: ['IO current', ELECTRICAL_CURRENT_AMPERE, "mdi:current-dc", 0x4f, 2],
+    SENSOR_BATTERY_VOLTAGE: ['Battery voltage', ELECTRIC_POTENTIAL_VOLT, "mdi:flash", 0x49, 2],
+    SENSOR_BATTERY_CURRENT: ['Battery current', ELECTRIC_CURRENT_AMPERE, "mdi:current-dc", 0x4b, 2],
+    SENSOR_IO_VOLTAGE: ['IO voltage', ELECTRIC_POTENTIAL_VOLT, "mdi:flash", 0x4d, 2],
+    SENSOR_IO_CURRENT: ['IO current', ELECTRIC_CURRENT_AMPERE, "mdi:current-dc", 0x4f, 2],
 }
 
 BAT_STATUS_NORMAL = 'normal'
