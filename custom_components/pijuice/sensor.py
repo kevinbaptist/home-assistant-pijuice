@@ -16,7 +16,11 @@ from homeassistant.const import (
     TEMP_FAHRENHEIT,
     PERCENTAGE,
     ELECTRIC_POTENTIAL_VOLT,
-    ELECTRIC_CURRENT_AMPERE)
+    ELECTRIC_CURRENT_AMPERE,
+    DEVICE_CLASS_BATTERY,
+    DEVICE_CLASS_TEMPERATURE,
+    DEVICE_CLASS_VOLTAGE,
+    DEVICE_CLASS_CURRENT)
 
 from smbus2 import SMBus
 
@@ -45,16 +49,16 @@ SENSOR_IO_VOLTAGE = "io_voltage"
 SENSOR_IO_CURRENT = "io_current"
 
 SENSOR_LIST = {
-    # [name, unit, index]
-    SENSOR_BATTERY_STATUS: ['Battery status', '', "mdi:flash", 0x40, 1],
-    SENSOR_POWER_STATUS: ['Power input status', '', "mdi:power-plug", 0x40, 1],
-    SENSOR_POWER_IO_STATUS: ['Power input IO status', '', "mdi:power-plug", 0x40, 1],
-    SENSOR_CHARGE: ['Charge', PERCENTAGE, "mdi:battery", 0x41, 1],
-    SENSOR_TEMP: ['Temperature', TEMP_CELSIUS, "mdi:thermometer", 0x47, 2],
-    SENSOR_BATTERY_VOLTAGE: ['Battery voltage', ELECTRIC_POTENTIAL_VOLT, "mdi:flash", 0x49, 2],
-    SENSOR_BATTERY_CURRENT: ['Battery current', ELECTRIC_CURRENT_AMPERE, "mdi:current-dc", 0x4b, 2],
-    SENSOR_IO_VOLTAGE: ['IO voltage', ELECTRIC_POTENTIAL_VOLT, "mdi:flash", 0x4d, 2],
-    SENSOR_IO_CURRENT: ['IO current', ELECTRIC_CURRENT_AMPERE, "mdi:current-dc", 0x4f, 2],
+    # [name, class, unit, icon, index, size]
+    SENSOR_BATTERY_STATUS:  ['Battery status',        '',                       '',                      "mdi:flash",       0x40, 1],
+    SENSOR_POWER_STATUS:    ['Power input status',    '',                       '',                      "mdi:power-plug",  0x40, 1],
+    SENSOR_POWER_IO_STATUS: ['Power input IO status', '',                       '',                      "mdi:power-plug",  0x40, 1],
+    SENSOR_CHARGE:          ['Charge',                DEVICE_CLASS_BATTERY,     PERCENTAGE,              "mdi:battery",     0x41, 1],
+    SENSOR_TEMP:            ['Temperature',           DEVICE_CLASS_TEMPERATURE, TEMP_CELSIUS,            "mdi:thermometer", 0x47, 2],
+    SENSOR_BATTERY_VOLTAGE: ['Battery voltage',       DEVICE_CLASS_VOLTAGE,     ELECTRIC_POTENTIAL_VOLT, "mdi:flash",       0x49, 2],
+    SENSOR_BATTERY_CURRENT: ['Battery current',       DEVICE_CLASS_CURRENT,     ELECTRIC_CURRENT_AMPERE, "mdi:current-dc",  0x4b, 2],
+    SENSOR_IO_VOLTAGE:      ['IO voltage',            DEVICE_CLASS_VOLTAGE,     ELECTRIC_POTENTIAL_VOLT, "mdi:flash",       0x4d, 2],
+    SENSOR_IO_CURRENT:      ['IO current',            DEVICE_CLASS_CURRENT,     ELECTRIC_CURRENT_AMPERE, "mdi:current-dc",  0x4f, 2],
 }
 
 BAT_STATUS_NORMAL = 'normal'
@@ -107,16 +111,17 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     name = config.get(CONF_NAME)
     SENSOR_LIST[SENSOR_TEMP][1] = hass.config.units.temperature_unit
     
-    if os.path.exists('/dev/i2c-0') or os.path.exists('/dev/i2c-1') :
-        _LOGGER.info("PiJuice: I2C is present. Start serving sensors...")
-        sensors = []
-        for sensor in config.get(CONF_MONITORED_CONDITIONS):
-            sensors.append(PiJuiceSensor(hass, config, name, sensor))
-        
-        async_add_entities(sensors, True)
-        _LOGGER.info("PiJuice: Everything is setup.")
-    else:
+    if ((os.path.exists('/dev/i2c-0') == False) and (os.path.exists('/dev/i2c-1') == False)) :
         _LOGGER.error("I2C does not exist! No sensor will be served. Please activate I2C bus in your OS.")
+        return
+    
+    _LOGGER.info("PiJuice: I2C is present. Start serving sensors...")
+    sensors = []
+    for sensor in config.get(CONF_MONITORED_CONDITIONS):
+        sensors.append(PiJuiceSensor(hass, config, name, sensor))
+    
+    async_add_entities(sensors, True)
+    _LOGGER.info("PiJuice: Everything is setup.")
 
 
 class PiJuiceSensor(Entity):
@@ -127,10 +132,11 @@ class PiJuiceSensor(Entity):
         self._hass = hass
         self._client_name = name
         self._name = SENSOR_LIST[sensor][0]
-        self._unit_of_measurement = SENSOR_LIST[sensor][1]
-        self._icon = SENSOR_LIST[sensor][2]
-        self._index = SENSOR_LIST[sensor][3]
-        self._size = SENSOR_LIST[sensor][4]
+        self._class = SENSOR_LIST[sensor][1]
+        self._unit_of_measurement = SENSOR_LIST[sensor][2]
+        self._icon = SENSOR_LIST[sensor][3]
+        self._index = SENSOR_LIST[sensor][4]
+        self._size = SENSOR_LIST[sensor][5]
         self._sensor = sensor
         self._state = None
         self._config = config
@@ -183,10 +189,18 @@ class PiJuiceSensor(Entity):
     @property
     def device_class(self):
         """Return the device class of the entity."""
-        if self._sensor == SENSOR_BATTERY_STATUS:
-            return "pijuice__battery"
+        if self._class != "":
+            return self._class
         else:
             return "pijuice__input"
+
+    @property
+    def state_class(self):
+        """Return the state class of the entity."""
+        if self._class != "":
+            return "measurement"
+        else:
+            return ""
 
     async def async_update(self):
         """Set up the sensor."""
