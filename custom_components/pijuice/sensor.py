@@ -4,26 +4,22 @@ import os
 import voluptuous as vol
 from datetime import timedelta
 
-from homeassistant.components.sensor import SensorEntity
-from homeassistant.components.sensor import PLATFORM_SCHEMA
+from homeassistant.components.sensor import (
+    SensorDeviceClass,
+    SensorEntity,
+    SensorStateClass,
+    PLATFORM_SCHEMA,
+)
 import homeassistant.helpers.config_validation as cv
 from homeassistant.util import Throttle
-from homeassistant.util.temperature import celsius_to_fahrenheit
+
 from homeassistant.const import (
     CONF_NAME,
     CONF_MONITORED_CONDITIONS,
-    TEMP_CELSIUS,
-    TEMP_FAHRENHEIT,
     PERCENTAGE,
-    ELECTRIC_POTENTIAL_VOLT,
-    ELECTRIC_CURRENT_AMPERE,
-    DEVICE_CLASS_BATTERY,
-    DEVICE_CLASS_TEMPERATURE,
-    DEVICE_CLASS_VOLTAGE,
-    DEVICE_CLASS_CURRENT
-)
-from homeassistant.components.sensor import (
-    STATE_CLASS_MEASUREMENT,
+    UnitOfElectricCurrent,
+    UnitOfElectricPotential,
+    UnitOfTemperature,
 )
 
 from smbus2 import SMBus
@@ -55,23 +51,23 @@ SENSOR_IO_CURRENT = "io_current"
 SENSOR_LIST = {
     # [name, device class, state class, unit, icon, index, size]
     SENSOR_BATTERY_STATUS:
-        ['Battery status',        '',                       '',                      '',                      "mdi:flash",       0x40, 1],
+        ['Battery status',        SensorDeviceClass.ENUM,        "",                           None,                         "mdi:flash",       0x40, 1],
     SENSOR_POWER_STATUS:
-        ['Power input status',    '',                       '',                      '',                      "mdi:power-plug",  0x40, 1],
+        ['Power input status',    SensorDeviceClass.ENUM,        "",                           None,                         "mdi:power-plug",  0x40, 1],
     SENSOR_POWER_IO_STATUS:
-        ['Power input IO status', '',                       '',                      '',                      "mdi:power-plug",  0x40, 1],
+        ['Power input IO status', SensorDeviceClass.ENUM,        "",                           None,                         "mdi:power-plug",  0x40, 1],
     SENSOR_CHARGE:
-        ['Charge',                DEVICE_CLASS_BATTERY,     STATE_CLASS_MEASUREMENT, PERCENTAGE,              "mdi:battery",     0x41, 1],
+        ['Charge',                SensorDeviceClass.BATTERY,     SensorStateClass.MEASUREMENT, PERCENTAGE,                   "mdi:battery",     0x41, 1],
     SENSOR_TEMP:
-        ['Temperature',           DEVICE_CLASS_TEMPERATURE, STATE_CLASS_MEASUREMENT, TEMP_CELSIUS,            "mdi:thermometer", 0x47, 2],
+        ['Temperature',           SensorDeviceClass.TEMPERATURE, SensorStateClass.MEASUREMENT, UnitOfTemperature.CELSIUS,    "mdi:thermometer", 0x47, 2],
     SENSOR_BATTERY_VOLTAGE:
-        ['Battery voltage',       DEVICE_CLASS_VOLTAGE,     STATE_CLASS_MEASUREMENT, ELECTRIC_POTENTIAL_VOLT, "mdi:flash",       0x49, 2],
+        ['Battery voltage',       SensorDeviceClass.VOLTAGE,     SensorStateClass.MEASUREMENT, UnitOfElectricPotential.VOLT, "mdi:flash",       0x49, 2],
     SENSOR_BATTERY_CURRENT:
-        ['Battery current',       DEVICE_CLASS_CURRENT,     STATE_CLASS_MEASUREMENT, ELECTRIC_CURRENT_AMPERE, "mdi:current-dc",  0x4b, 2],
+        ['Battery current',       SensorDeviceClass.CURRENT,     SensorStateClass.MEASUREMENT, UnitOfElectricCurrent.AMPERE, "mdi:current-dc",  0x4b, 2],
     SENSOR_IO_VOLTAGE:
-        ['IO voltage',            DEVICE_CLASS_VOLTAGE,     STATE_CLASS_MEASUREMENT, ELECTRIC_POTENTIAL_VOLT, "mdi:flash",       0x4d, 2],
+        ['IO voltage',            SensorDeviceClass.VOLTAGE,     SensorStateClass.MEASUREMENT, UnitOfElectricPotential.VOLT, "mdi:flash",       0x4d, 2],
     SENSOR_IO_CURRENT:
-        ['IO current',            DEVICE_CLASS_CURRENT,     STATE_CLASS_MEASUREMENT, ELECTRIC_CURRENT_AMPERE, "mdi:current-dc",  0x4f, 2],
+        ['IO current',            SensorDeviceClass.CURRENT,     SensorStateClass.MEASUREMENT, UnitOfElectricCurrent.AMPERE, "mdi:current-dc",  0x4f, 2],
 }
 
 BAT_STATUS_NORMAL = 'normal'
@@ -123,16 +119,16 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     """Set up the PiJuice sensor."""
     name = config.get(CONF_NAME)
     SENSOR_LIST[SENSOR_TEMP][1] = hass.config.units.temperature_unit
-    
+
     if ((os.path.exists('/dev/i2c-0') == False) and (os.path.exists('/dev/i2c-1') == False)) :
         _LOGGER.error("I2C does not exist! No sensor will be served. Please activate I2C bus in your OS.")
         return
-    
+
     _LOGGER.info("PiJuice: I2C is present. Start serving sensors...")
     sensors = []
     for sensor in config.get(CONF_MONITORED_CONDITIONS):
         sensors.append(PiJuiceSensor(hass, config, name, sensor))
-    
+
     async_add_entities(sensors, True)
     _LOGGER.info("PiJuice: Everything is setup.")
 
@@ -163,7 +159,7 @@ class PiJuiceSensor(SensorEntity):
     @property
     def native_value(self):
         """Return the state of the device."""
-        return self._attr_native_value 
+        return self._attr_native_value
 
     @property
     def device_class(self):
@@ -213,11 +209,11 @@ class PiJuiceSensor(SensorEntity):
         # Reading data from I2C bus
         i2c_address = int(self._config.get(CONF_I2C_ADDRESS))
         i2c_bus = int(self._config.get(CONF_I2C_BUS))
-        
+
         try:
-            bus = SMBus(i2c_bus)
-            data = bus.read_i2c_block_data(i2c_address, self._index, self._size)
-            
+            with SMBus(i2c_bus) as bus:
+                data = bus.read_i2c_block_data(i2c_address, self._index, self._size)
+
             # Scale red values
             if self._sensor == SENSOR_BATTERY_STATUS:
                 self._attr_native_value = BATTERY_STATUS_LIST[(data[0] >> 2) & 0x03]
@@ -241,7 +237,7 @@ class PiJuiceSensor(SensorEntity):
                 self._attr_native_value = value /1000.0
             else: #should never occurs
                 self._attr_native_value = data[0]
-            
+
             _LOGGER.debug(f"PiJuice: Updated sensor '{self._attr_name}' - new value '{self._attr_native_value}'")
         # Error while reading on I2C bus
         except Exception as error:

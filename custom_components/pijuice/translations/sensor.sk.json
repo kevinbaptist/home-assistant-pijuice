@@ -1,0 +1,16 @@
+{
+  "state": {
+    "pijuice__battery": {
+      "normal": "Normálne",
+      "charging_from_in": "Nabíjanie zvnútra",
+      "charging_from_5v_io": "Nabíjanie z I/O",
+      "not_present": "Nie je prítomný"
+    },
+    "pijuice__input": {
+      "not_present": "Nie je prítomný",
+      "bad": "Zlé",
+      "weak": "Slabý",
+      "present": "Prítomnosť"
+    }
+  }
+}
